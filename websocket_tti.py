@@ -144,7 +144,7 @@ def write_perf_summary(output_path):
 if __name__ == "__main__":
     # ---- 設定 ----
     SERVER_ADDRESS = "127.0.0.1:7890"
-    BASE_DIR = "/workspace/data/allen/dataset/tti_test"
+    BASE_DIR = "/workspace/data/allen/dataset/benchmark_testing/text_to_image"
     # RUNNING_JSON = ["tti.json", "portrait.json"]
     RUNNING_JSON = ["test_performance.json"]
 

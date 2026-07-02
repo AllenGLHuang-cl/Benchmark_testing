@@ -1,24 +1,26 @@
 {
-  "9": {
+  "76": {
     "inputs": {
-      "filename_prefix": "Flux2-Klein",
+      "value": "A high-fashion editorial featuring three elegant Korean women posing closely together against a solid pastel background. The composition is sophisticated and dreamy, exuding a luxurious magazine aesthetic with a focus on delicate details, soft lighting, and elegant styling.\\n\\nLeft Upper Side (Pastel Blue Hair, Slightly Tilting Left, Hand Placed Near Hair):\\nA woman with long, wavy pastel blue hair poses gracefully, her head slightly tilted to the left. She wears a light blue semi-sheer long-sleeve dress adorned with intricate floral embellishments. Her left hand is gently placed near her hair, adding an effortless and refined elegance to her pose. Her serene expression enhances the soft and graceful atmosphere of the image.\\n\\nLeft Lower Side (Blonde Short Curls, Slightly Facing Right, Wearing a White Dress, Hands Naturally Resting Down):\\nA woman with short, voluminous blonde curls sits gracefully, her body slightly angled to the right while maintaining a poised posture. She is dressed in a high-neck, semi-sheer white dress with an intricate lace or delicate pattern. Her hands are naturally resting down, contributing to a relaxed and elegant stance. Her wide eyes and youthful expression exude charm and sophistication, adding to the refined, fashion-forward composition.\\n\\nRight Side (Coffee-Brown Hair, Slightly Facing Left, Hands Naturally Resting Down):\\nA woman with long, wavy coffee-brown hair is positioned on the right side, with her body slightly facing left to create a balanced and harmonious arrangement. She wears a peach-toned sheer dress adorned with elegant embroidery and delicate floral motifs. Her hands are naturally resting down, reinforcing a composed and graceful posture. Her confident yet calm gaze is directed at the camera, while her subtle head tilt and poised presence add to the overall refined aesthetic.\\n\\nTheir poses are fluid and intertwined, forming a visually striking triangular composition that radiates warmth and sophistication. The soft and diffused lighting enhances their flawless skin and highlights the delicate textures of their garments. The solid pastel background keeps the focus entirely on the subjects, making the image feel clean, modern, and effortlessly chic—perfectly suited for a high-end fashion editorial."
+    },
+    "class_type": "PrimitiveStringMultiline",
+    "_meta": {
+      "title": "Prompt"
+    }
+  },
+  "94": {
+    "inputs": {
+      "filename_prefix": "results",
+      "fake_input": 0,
+      "write_disk": true,
       "images": [
         "75:65",
         0
       ]
     },
-    "class_type": "SaveImage",
+    "class_type": "SaveImageJpg",
     "_meta": {
-      "title": "Save Image"
-    }
-  },
-  "76": {
-    "inputs": {
-      "value": "一張標題為\"CyberLink 30th & Perfect 10th\"的海報，用賦予科技感的風格呈現。"
-    },
-    "class_type": "PrimitiveStringMultiline",
-    "_meta": {
-      "title": "Prompt"
+      "title": "Save Image Jpg"
     }
   },
   "75:61": {
@@ -124,7 +126,7 @@
   },
   "75:73": {
     "inputs": {
-      "noise_seed": 537142253708525
+      "noise_seed": 244530131152553
     },
     "class_type": "RandomNoise",
     "_meta": {
@@ -133,8 +135,8 @@
   },
   "75:70": {
     "inputs": {
-      "unet_name": "flux-2-klein-4b-fp8.safetensors",
-      "weight_dtype": "default"
+      "unet_name": "flux-2-klein-9b-fp8.safetensors",
+      "weight_dtype": "fp8_e4m3fn_fast"
     },
     "class_type": "UNETLoader",
     "_meta": {
@@ -143,7 +145,7 @@
   },
   "75:71": {
     "inputs": {
-      "clip_name": "qwen3_4b_fp8_scaled.safetensors",
+      "clip_name": "qwen_3_8b_fp8mixed.safetensors",
       "type": "flux2",
       "device": "default"
     },

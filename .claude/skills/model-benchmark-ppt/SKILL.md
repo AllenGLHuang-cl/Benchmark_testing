@@ -37,8 +37,11 @@ before adding video comparisons.
 3. **Write a config** (copy `example-config.json` for features, `example-config-flat.json`
    for flat; keep it next to the output for reproducibility) and run:
    ```bash
-   python /workspace/run_batch/.claude/skills/model-benchmark-ppt/make_comparison_ppt.py config.json
+   python /workspace/Benchmark_testing/.claude/skills/model-benchmark-ppt/make_comparison_ppt.py config.json
    ```
+   Decks + their configs go in **`/workspace/Benchmark_testing/comparison_ppt/`** (user
+   preference, 2026-07-02) — the dir is gitignored so multi-MB `.pptx` files never reach
+   the GitHub remote; don't un-ignore it.
 4. **Report** the printed summary: layout, group count, missing-cell stats (every model
    listed, including 0-missing ones), file size.
 
@@ -82,10 +85,10 @@ before adding video comparisons.
   `elapsed_sec`, `vram_peak_gib` — one single VRAM figure, chosen to approximate
   `nvidia-smi`/NVML rather than ComfyUI's own under-counted free-memory report —
   `weight_type`, `device`, `output_width/height`; see `_PERF_AUTO_COLUMNS` in
-  `make_comparison_ppt.py`, written by `run_batch/websocket_edit.py` / `websocket_tti.py` via
-  the shared `run_batch/perf_utils.py`). This mapping is a **hand-kept copy** — the two
+  `make_comparison_ppt.py`, written by `websocket_edit.py` (this repo) / `websocket_tti.py` via
+  the shared `perf_utils.py`). This mapping is a **hand-kept copy** — the two
   scripts import the real aggregation from `perf_utils.aggregate_records()`, but this
-  skill stays self-contained rather than importing across into `run_batch/`, so if the
+  skill stays self-contained rather than importing from the repo root, so if the
   record schema changes again, update `_PERF_AUTO_COLUMNS` here too. A `performance.jsonl`
   recorded before a schema change (e.g. old per-metric fields like `inference_time_s`/
   `memory_used_gib`, or the pre-GiB `vram_peak_mb`) silently produces blank cells for the

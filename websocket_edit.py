@@ -12,6 +12,7 @@ import io
 from pathlib import Path
 
 from comfy_client import get_outputs, update_params_by_class, update_params_by_name
+from dataset_utils import get_image_files, load_prompts_for_image
 from perf_utils import GpuMemorySampler, aggregate_records, append_jsonl, mem_value, read_jsonl, to_gib, warmup
 
 def get_param_value_by_name(params, input_name):
@@ -21,48 +22,6 @@ def get_param_value_by_name(params, input_name):
         if value is not None and not isinstance(value, list):
             return value
     return None
-
-def get_image_files(src_folder, max_images_per_feature=10):
-    """獲取資料夾中所有圖片檔案"""
-    image_extensions = {'.jpg', '.jpeg', '.png', '.webp', '.bmp'}
-    image_files = []
-    for file in Path(src_folder).iterdir():
-        if file.is_file() and file.suffix.lower() in image_extensions:
-            image_files.append(file)
-            if len(image_files) >= max_images_per_feature:
-                break
-    return sorted(image_files)
-
-def load_prompts_for_image(image_file, meta_data_folder):
-    """
-    載入圖片對應的 prompts
-    優先使用 {image_name}.json，如果不存在則使用 prompt.json
-    """
-    # 嘗試載入對應檔名的 JSON
-    specific_meta_file = meta_data_folder / f"{image_file.stem}.json"
-    
-    if specific_meta_file.exists():
-        with open(specific_meta_file, "r") as f:
-            meta_data = json.loads(f.read())
-        prompts = meta_data.get("prompt", [])
-        source = f"{image_file.stem}.json"
-    else:
-        # 使用共用的 prompt.json
-        shared_meta_file = meta_data_folder / "prompt.json"
-        if shared_meta_file.exists():
-            with open(shared_meta_file, "r") as f:
-                meta_data = json.loads(f.read())
-            prompts = meta_data.get("prompt", [])
-            source = "prompt.json (shared)"
-        else:
-            print(f"Warning: No meta_data found for {image_file.name} and no prompt.json exists, skipping...")
-            return None, None
-    
-    # 確保 prompts 是 list
-    if not isinstance(prompts, list):
-        prompts = [prompts]
-    
-    return prompts, source
 
 def process_feature(feature_name, feature_path, config_path, output_name, server_address, client_id, ws, seed, num_of_output, max_images_per_feature=10, use_random_seed=False, weight_type=None, memory_sample_interval_sec=0.05, warmup_runs=2):
     """處理單一 feature 資料夾"""
@@ -186,9 +145,9 @@ def process_feature(feature_name, feature_path, config_path, output_name, server
 if __name__ == "__main__":
     # 設定
     server_address = "127.0.0.1:7890"
-    base_folder = Path("/data/allen/dataset/image_editing")
-    config_path = "./model_configs/boogu_image_edit_turbo-api.json"
-    output_name = "boogu_image_edit_turbo-fp8"
+    base_folder = Path("/data/allen/dataset/benchmark_testing/single_image_editing")
+    config_path = "./model_configs/flux2_kelin_4b_edit-api.json"
+    output_name = "flux2_klein_distill_4b"
     seed = 2025  # use_random_seed=False 時，第 i 張輸出用 seed+i
     use_random_seed = True  # True: 每張圖都 random 產生 seed 並記錄；False: 用固定 seed+i
     weight_type = "fp8"  # 這次跑的權重類型標籤，只有處理 performance_test 資料夾時會寫進 performance.jsonl
@@ -209,21 +168,22 @@ if __name__ == "__main__":
     # 處理每個 feature
     for feature_folder in feature_folders:
         feature_name = feature_folder.name
-        process_feature(
-            feature_name=feature_name,
-            feature_path=feature_folder,
-            config_path=config_path,
-            output_name=output_name,
-            server_address=server_address,
-            client_id=client_id,
-            ws=ws,
-            seed=seed,
-            num_of_output=num_of_output,
-            max_images_per_feature=max_images_per_feature,
-            use_random_seed=use_random_seed,
-            weight_type=weight_type,
-            warmup_runs=warmup_runs,
-        )
+        if feature_name == "performance_test":
+            process_feature(
+                feature_name=feature_name,
+                feature_path=feature_folder,
+                config_path=config_path,
+                output_name=output_name,
+                server_address=server_address,
+                client_id=client_id,
+                ws=ws,
+                seed=seed,
+                num_of_output=num_of_output,
+                max_images_per_feature=max_images_per_feature,
+                use_random_seed=use_random_seed,
+                weight_type=weight_type,
+                warmup_runs=warmup_runs,
+            )
     
     ws.close()
     print("\nAll features processed!")

@@ -1,23 +1,43 @@
 {
   "title": "TTI 模型比較 · Text-to-Image Model Comparison",
-  "out": "/workspace/outputs/comparison_ppt/example_tti_compare.pptx",
+  "out": "/workspace/Benchmark_testing/comparison_ppt/example_tti_compare.pptx",
   "dataset_layout": "flat",
   "key_regex": "tti_(\\d+)_seed\\d+\\.jpg",
   "prefer_regex": "_seed2025",
   "models": [
-    {"label": "Z-Image-Turbo", "dir": "/data/allen/dataset/tti_test/results/tti/z_image_fp8_1328_fp8"},
-    {"label": "FLUX.2-klein-4B", "dir": "/data/allen/dataset/tti_test/results/tti/flux.2-klein-4b-fp8"},
-    {"label": "Boogu-Image-Turbo", "dir": "/data/allen/dataset/tti_test/results/tti/boogu-image-turbo-fp8"}
+    {
+      "label": "Z-Image-Turbo",
+      "dir": "/data/allen/dataset/tti_test/results/tti/z_image_fp8_1328_fp8"
+    },
+    {
+      "label": "FLUX.2-klein-4B",
+      "dir": "/data/allen/dataset/tti_test/results/tti/flux.2-klein-4b-fp8"
+    },
+    {
+      "label": "Boogu-Image-Turbo",
+      "dir": "/data/allen/dataset/tti_test/results/tti/boogu-image-turbo-fp8"
+    }
   ],
   "auto_pick": 30,
-  "captions": {"file": "/data/allen/dataset/tti_test/meta_data/tti.json", "json_path": "prompts", "key_is_index": true},
+  "captions": {
+    "file": "/data/allen/dataset/tti_test/meta_data/tti.json",
+    "json_path": "prompts",
+    "key_is_index": true
+  },
   "thumb_px": 640,
   "perf": {
     "note": "device: 6000ada",
-    "columns": ["Model size", "inference steps", "inference time (s)", "memory usage (GiB)"],
+    "columns": [
+      "Model size",
+      "inference steps",
+      "inference time (s)",
+      "memory usage (GiB)"
+    ],
     "auto_from": true,
     "rows": {
-      "Z-Image-Turbo": {"Model size": "8B"}
+      "Z-Image-Turbo": {
+        "Model size": "8B"
+      }
     }
   }
 }
