@@ -1,0 +1,24 @@
+{
+  "title": "Editing Models Comparison — example",
+  "out": "/workspace/outputs/comparison_ppt/example_edit_compare.pptx",
+  "dataset_root": "/workspace/data/allen/dataset/image_editing",
+  "features": ["object_removal", "replacement"],
+  "models": [
+    {"label": "Qwen-Edit-2511 4step", "dir": "qwen_image_edit_2511_4steps"},
+    {"label": "Wan2.7-Image", "dir": "wan2.7-image"},
+    {"label": "Klein-4B int4", "dir": "flux.2-klein-4b-int4"},
+    {"label": "Gemini 3 Pro", "dir": "gemini-3-pro-image-preview"},
+    {"label": "GPT-Image-2", "dir": "gpt_image2_20260425_072702"}
+  ],
+  "seed_prefer": ["seed2025", "seed2026"],
+  "picks": {},
+  "thumb_px": 768,
+  "perf": {
+    "note": "device: 6000ada, output size: 1024x1024",
+    "columns": ["inference steps", "inference time (s)", "memory usage (GiB)"],
+    "rows": {
+      "Qwen-Edit-2511 4step": {"inference steps": 4},
+      "Klein-4B int4": {"inference steps": 4}
+    }
+  }
+}
