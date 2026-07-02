@@ -1,8 +1,10 @@
 # 使用 websockets API 與 SaveImageWebsocket node 直接取得圖片（不經過磁碟）跑 text-to-image batch。
 #
-# 兩種模式（由 PERFORMANCE_TEST 切換）：
-#   - PERFORMANCE_TEST = False：正常 batch 生成，把圖片存到 output_path。
-#   - PERFORMANCE_TEST = True ：效能測試，不存圖，改記錄每次 request 花的時間與 GPU memory 到 CSV。
+# 兩種模式（由 PERFORMANCE_TEST 切換），圖片都會存：
+#   - PERFORMANCE_TEST = False：正常 batch 生成，不記錄效能。
+#   - PERFORMANCE_TEST = True ：正常生成之外，每個 prompt 只量測第一次生成（i==0）的時間與
+#     GPU memory，寫進 performance.jsonl。只測第一次是因為同一個 prompt 重跑第二次以後，
+#     ComfyUI 會 cache 住沒變過的 node（例如 CLIPTextEncode 的文字編碼），耗時會被低估。
 
 import io
 import json
@@ -17,7 +19,7 @@ from tqdm import tqdm
 
 from comfy_client import get_outputs, update_params_by_class, update_params_by_name
 from perf_utils import (
-    GpuMemorySampler, aggregate_records, append_jsonl, get_gpu_memory, mem_value,
+    GpuMemorySampler, aggregate_records, append_jsonl, mem_value,
     read_jsonl, to_gib, warmup,
 )
 
@@ -85,31 +87,26 @@ def run_model(
             seed = base_seed + i
             out_file = os.path.join(output_path, f"tti_{prompt_idx}_seed{seed}.jpg")
 
-            # 正常模式下已存在就跳過；效能測試一律重跑。
-            if not performance_test and os.path.exists(out_file):
+            # 每個 prompt 只有第一次生成（i==0）在效能測試模式下量測，且一律重跑取得乾淨數據；
+            # 其餘情況（含 i>=1 的額外輸出）已存在就跳過，支援中斷續跑。
+            measure = performance_test and i == 0
+            if not measure and os.path.exists(out_file):
                 continue
 
             params = build_params(config_path, test_prompt, seed, width, height)
 
-            sampler = None
-            sampler_stats = None
-            if performance_test:
-                sampler = GpuMemorySampler(
-                    server_address,
-                    interval_sec=memory_sample_interval_sec,
-                ).start()
+            sampler = GpuMemorySampler(server_address, interval_sec=memory_sample_interval_sec).start() if measure else None
 
             start = time.perf_counter()
             try:
                 outputs = get_outputs(ws, params, client_id, server_address)
                 elapsed = time.perf_counter() - start
             finally:
-                if sampler is not None:
-                    sampler_stats = sampler.stop()
+                sampler_stats = sampler.stop() if sampler is not None else None
 
-            if performance_test:
-                latest_mem = sampler_stats["latest"] if sampler_stats is not None else get_gpu_memory(server_address)
-                peak_mem = sampler_stats["peaks"] if sampler_stats is not None else latest_mem
+            if measure:
+                latest_mem = sampler_stats["latest"]
+                peak_mem = sampler_stats["peaks"]
                 record = {
                     "model": model_name,
                     "device": mem_value(latest_mem, "device_name"),
@@ -117,12 +114,13 @@ def run_model(
                     "seed": seed,
                     "elapsed_sec": round(elapsed, 3),
                     "vram_peak_gib": to_gib(mem_value(peak_mem, "vram_used")),
-                    "vram_sample_count": sampler_stats["sample_count"] if sampler_stats is not None else 1,
-                    "vram_sampling_errors": sampler_stats["error_count"] if sampler_stats is not None else 0,
+                    "vram_sample_count": sampler_stats["sample_count"],
+                    "vram_sampling_errors": sampler_stats["error_count"],
                 }
                 append_jsonl(record, perf_log_path)
                 perf_records.append(record)
-            elif not save_first_image(outputs, out_file):
+
+            if not save_first_image(outputs, out_file):
                 print(f"\033[93m[warning] no image output for prompt {prompt_idx} seed {seed}\033[0m")
 
     return perf_records
