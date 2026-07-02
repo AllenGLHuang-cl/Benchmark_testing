@@ -1,0 +1,48 @@
+{
+  "1": {
+    "inputs": {
+      "model_path": "/workspace/models/diffusion_models/LongCat-Image",
+      "dtype": "bfloat16",
+      "enable_cpu_offload": "true",
+      "attention_backend": "default"
+    },
+    "class_type": "LongCatImageModelLoader",
+    "_meta": {
+      "title": "LongCat-Image Model Loader"
+    }
+  },
+  "2": {
+    "inputs": {
+      "prompt": "A young Asian woman wearing a yellow knit sweater with a white necklace. Her hands are resting on her knees with a serene expression. The background is a rough brick wall with warm afternoon sunlight creating a peaceful and warm atmosphere.",
+      "negative_prompt": "",
+      "width": 1344,
+      "height": 768,
+      "steps": 50,
+      "guidance_scale": 4.5,
+      "seed": 43,
+      "enable_cfg_renorm": "true",
+      "enable_prompt_rewrite": "true",
+      "longcat_pipeline": [
+        "1",
+        0
+      ]
+    },
+    "class_type": "LongCatImageTextToImage",
+    "_meta": {
+      "title": "LongCat-Image Text to Image"
+    }
+  },
+  "3": {
+    "inputs": {
+      "filename_prefix": "ComfyUI",
+      "images": [
+        "2",
+        0
+      ]
+    },
+    "class_type": "SaveImage",
+    "_meta": {
+      "title": "Save Image"
+    }
+  }
+}

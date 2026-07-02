@@ -1,0 +1,205 @@
+{
+  "6": {
+    "inputs": {
+      "text": "A high-fashion editorial featuring three elegant Korean women posing closely together against a solid pastel background. The composition is sophisticated and dreamy, exuding a luxurious magazine aesthetic with a focus on delicate details, soft lighting, and elegant styling.\\n\\nLeft Upper Side (Pastel Blue Hair, Slightly Tilting Left, Hand Placed Near Hair):\\nA woman with long, wavy pastel blue hair poses gracefully, her head slightly tilted to the left. She wears a light blue semi-sheer long-sleeve dress adorned with intricate floral embellishments. Her left hand is gently placed near her hair, adding an effortless and refined elegance to her pose. Her serene expression enhances the soft and graceful atmosphere of the image.\\n\\nLeft Lower Side (Blonde Short Curls, Slightly Facing Right, Wearing a White Dress, Hands Naturally Resting Down):\\nA woman with short, voluminous blonde curls sits gracefully, her body slightly angled to the right while maintaining a poised posture. She is dressed in a high-neck, semi-sheer white dress with an intricate lace or delicate pattern. Her hands are naturally resting down, contributing to a relaxed and elegant stance. Her wide eyes and youthful expression exude charm and sophistication, adding to the refined, fashion-forward composition.\\n\\nRight Side (Coffee-Brown Hair, Slightly Facing Left, Hands Naturally Resting Down):\\nA woman with long, wavy coffee-brown hair is positioned on the right side, with her body slightly facing left to create a balanced and harmonious arrangement. She wears a peach-toned sheer dress adorned with elegant embroidery and delicate floral motifs. Her hands are naturally resting down, reinforcing a composed and graceful posture. realistic image and fun image.",
+      "clip": [
+        "34",
+        0
+      ]
+    },
+    "class_type": "CLIPTextEncode",
+    "_meta": {
+      "title": "CLIP Text Encode (Positive Prompt)"
+    }
+  },
+  "7": {
+    "inputs": {
+      "text": "",
+      "clip": [
+        "34",
+        0
+      ]
+    },
+    "class_type": "CLIPTextEncode",
+    "_meta": {
+      "title": "CLIP Text Encode (Negative Prompt)"
+    }
+  },
+  "8": {
+    "inputs": {
+      "samples": [
+        "45",
+        0
+      ],
+      "vae": [
+        "17",
+        0
+      ]
+    },
+    "class_type": "VAEDecode",
+    "_meta": {
+      "title": "VAE Decode"
+    }
+  },
+  "11": {
+    "inputs": {
+      "shift": 3,
+      "model": [
+        "28",
+        0
+      ]
+    },
+    "class_type": "ModelSamplingAuraFlow",
+    "_meta": {
+      "title": "ModelSamplingAuraFlow"
+    }
+  },
+  "13": {
+    "inputs": {
+      "width": 1328,
+      "height": 1328,
+      "batch_size": 1
+    },
+    "class_type": "EmptySD3LatentImage",
+    "_meta": {
+      "title": "EmptySD3LatentImage"
+    }
+  },
+  "16": {
+    "inputs": {
+      "unet_name": "z-image-turbo-fp8-e4m3fn.safetensors",
+      "weight_dtype": "fp8_e4m3fn_fast"
+    },
+    "class_type": "UNETLoader",
+    "_meta": {
+      "title": "Load Diffusion Model"
+    }
+  },
+  "17": {
+    "inputs": {
+      "vae_name": "ae.safetensors"
+    },
+    "class_type": "VAELoader",
+    "_meta": {
+      "title": "Load VAE"
+    }
+  },
+  "28": {
+    "inputs": {
+      "sage_attention": "auto",
+      "model": [
+        "16",
+        0
+      ]
+    },
+    "class_type": "PathchSageAttentionKJ",
+    "_meta": {
+      "title": "Patch Sage Attention KJ"
+    }
+  },
+  "34": {
+    "inputs": {
+      "clip_name": "qwen3_4b_fp8_scaled.safetensors",
+      "type": "lumina2",
+      "device": "default"
+    },
+    "class_type": "CLIPLoader",
+    "_meta": {
+      "title": "Load CLIP"
+    }
+  },
+  "37": {
+    "inputs": {
+      "filename_prefix": "results",
+      "fake_input": 0,
+      "write_disk": true,
+      "images": [
+        "8",
+        0
+      ]
+    },
+    "class_type": "SaveImageJpg",
+    "_meta": {
+      "title": "Save Image Jpg"
+    }
+  },
+  "45": {
+    "inputs": {
+      "add_noise": true,
+      "noise_seed": 2027,
+      "cfg": 1,
+      "positive": [
+        "6",
+        0
+      ],
+      "negative": [
+        "7",
+        0
+      ],
+      "sampler": [
+        "46",
+        0
+      ],
+      "sigmas": [
+        "47",
+        0
+      ],
+      "latent_image": [
+        "13",
+        0
+      ],
+      "model": [
+        "16",
+        0
+      ]
+    },
+    "class_type": "SamplerCustom",
+    "_meta": {
+      "title": "SamplerCustom"
+    }
+  },
+  "46": {
+    "inputs": {
+      "sampler_name": "euler"
+    },
+    "class_type": "KSamplerSelect",
+    "_meta": {
+      "title": "KSamplerSelect"
+    }
+  },
+  "47": {
+    "inputs": {
+      "scheduler": "simple",
+      "steps": 9,
+      "denoise": 1,
+      "model": [
+        "16",
+        0
+      ]
+    },
+    "class_type": "BasicScheduler",
+    "_meta": {
+      "title": "BasicScheduler"
+    }
+  },
+  "48": {
+    "inputs": {
+      "anything": [
+        "16",
+        0
+      ],
+      "anything2": [
+        "34",
+        0
+      ],
+      "anything3": [
+        "17",
+        0
+      ]
+    },
+    "class_type": "Anything Everywhere3",
+    "_meta": {
+      "title": "Anything Everywhere3"
+    }
+  }
+}

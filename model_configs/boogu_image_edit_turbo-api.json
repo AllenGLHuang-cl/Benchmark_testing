@@ -1,0 +1,210 @@
+{
+  "32": {
+    "inputs": {
+      "image": "035.png"
+    },
+    "class_type": "LoadImage",
+    "_meta": {
+      "title": "Load Image"
+    }
+  },
+  "46": {
+    "inputs": {
+      "image": [
+        "49",
+        0
+      ]
+    },
+    "class_type": "GetImageSize",
+    "_meta": {
+      "title": "Get Image Size"
+    }
+  },
+  "49": {
+    "inputs": {
+      "resize_type": "scale total pixels",
+      "resize_type.megapixels": 1,
+      "scale_method": "lanczos",
+      "input": [
+        "32",
+        0
+      ]
+    },
+    "class_type": "ResizeImageMaskNode",
+    "_meta": {
+      "title": "Resize Image/Mask"
+    }
+  },
+  "55": {
+    "inputs": {
+      "filename_prefix": "results",
+      "fake_input": 0,
+      "write_disk": true,
+      "images": [
+        "45:3",
+        0
+      ]
+    },
+    "class_type": "SaveImageJpg",
+    "_meta": {
+      "title": "Save Image Jpg"
+    }
+  },
+  "45:2": {
+    "inputs": {
+      "unet_name": "boogu_image_edit_turbo_int8_convrot.safetensors",
+      "weight_dtype": "default"
+    },
+    "class_type": "UNETLoader",
+    "_meta": {
+      "title": "Load Diffusion Model"
+    }
+  },
+  "45:5": {
+    "inputs": {
+      "vae_name": "ae.safetensors"
+    },
+    "class_type": "VAELoader",
+    "_meta": {
+      "title": "Load VAE"
+    }
+  },
+  "45:8": {
+    "inputs": {
+      "width": [
+        "46",
+        0
+      ],
+      "height": [
+        "46",
+        1
+      ],
+      "batch_size": 1
+    },
+    "class_type": "EmptyLatentImage",
+    "_meta": {
+      "title": "Empty Latent Image"
+    }
+  },
+  "45:33": {
+    "inputs": {
+      "shift": 3.16,
+      "model": [
+        "45:2",
+        0
+      ]
+    },
+    "class_type": "ModelSamplingAuraFlow",
+    "_meta": {
+      "title": "ModelSamplingAuraFlow"
+    }
+  },
+  "45:7": {
+    "inputs": {
+      "clip_name": "qwen3vl_8b_fp8_scaled.safetensors",
+      "type": "boogu",
+      "device": "default"
+    },
+    "class_type": "CLIPLoader",
+    "_meta": {
+      "title": "Load CLIP"
+    }
+  },
+  "45:3": {
+    "inputs": {
+      "samples": [
+        "45:21",
+        0
+      ],
+      "vae": [
+        "45:5",
+        0
+      ]
+    },
+    "class_type": "VAEDecode",
+    "_meta": {
+      "title": "VAE Decode"
+    }
+  },
+  "45:36": {
+    "inputs": {
+      "prompt": "Remove all people in the background.",
+      "negative_prompt": "",
+      "clip": [
+        "45:7",
+        0
+      ],
+      "vae": [
+        "45:5",
+        0
+      ],
+      "images.image_1": [
+        "32",
+        0
+      ]
+    },
+    "class_type": "TextEncodeBooguEdit",
+    "_meta": {
+      "title": "TextEncodeBooguEdit"
+    }
+  },
+  "45:22": {
+    "inputs": {
+      "sampler_name": "dpmpp_2m"
+    },
+    "class_type": "KSamplerSelect",
+    "_meta": {
+      "title": "KSamplerSelect"
+    }
+  },
+  "45:26": {
+    "inputs": {
+      "scheduler": "simple",
+      "steps": 4,
+      "denoise": 1,
+      "model": [
+        "45:33",
+        0
+      ]
+    },
+    "class_type": "BasicScheduler",
+    "_meta": {
+      "title": "BasicScheduler"
+    }
+  },
+  "45:21": {
+    "inputs": {
+      "add_noise": true,
+      "noise_seed": 22,
+      "cfg": 1,
+      "model": [
+        "45:2",
+        0
+      ],
+      "positive": [
+        "45:36",
+        0
+      ],
+      "negative": [
+        "45:36",
+        1
+      ],
+      "sampler": [
+        "45:22",
+        0
+      ],
+      "sigmas": [
+        "45:26",
+        0
+      ],
+      "latent_image": [
+        "45:8",
+        0
+      ]
+    },
+    "class_type": "SamplerCustom",
+    "_meta": {
+      "title": "SamplerCustom"
+    }
+  }
+}

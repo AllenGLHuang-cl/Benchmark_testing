@@ -1,0 +1,338 @@
+{
+  "9": {
+    "inputs": {
+      "filename_prefix": "Qwen_Edit_2511",
+      "images": [
+        "143:141",
+        0
+      ]
+    },
+    "class_type": "SaveImage",
+    "_meta": {
+      "title": "Save Image"
+    }
+  },
+  "41": {
+    "inputs": {
+      "image": "S__3194905.jpg"
+    },
+    "class_type": "LoadImage",
+    "_meta": {
+      "title": "Load Image"
+    }
+  },
+  "143:119": {
+    "inputs": {
+      "shift": 3.1,
+      "model": [
+        "143:121",
+        0
+      ]
+    },
+    "class_type": "ModelSamplingAuraFlow",
+    "_meta": {
+      "title": "ModelSamplingAuraFlow"
+    }
+  },
+  "143:120": {
+    "inputs": {
+      "vae_name": "qwen_image_vae.safetensors"
+    },
+    "class_type": "VAELoader",
+    "_meta": {
+      "title": "Load VAE"
+    }
+  },
+  "143:122": {
+    "inputs": {
+      "reference_latents_method": "index_timestep_zero",
+      "conditioning": [
+        "143:144",
+        0
+      ]
+    },
+    "class_type": "FluxKontextMultiReferenceLatentMethod",
+    "_meta": {
+      "title": "Edit Model Reference Method"
+    }
+  },
+  "143:123": {
+    "inputs": {
+      "reference_latents_method": "index_timestep_zero",
+      "conditioning": [
+        "143:126",
+        0
+      ]
+    },
+    "class_type": "FluxKontextMultiReferenceLatentMethod",
+    "_meta": {
+      "title": "Edit Model Reference Method"
+    }
+  },
+  "143:129": {
+    "inputs": {
+      "strength": 1,
+      "model": [
+        "143:119",
+        0
+      ]
+    },
+    "class_type": "CFGNorm",
+    "_meta": {
+      "title": "CFGNorm"
+    }
+  },
+  "143:131": {
+    "inputs": {
+      "value": 4
+    },
+    "class_type": "PrimitiveInt",
+    "_meta": {
+      "title": "Steps"
+    }
+  },
+  "143:132": {
+    "inputs": {
+      "value": 4
+    },
+    "class_type": "PrimitiveFloat",
+    "_meta": {
+      "title": "CFG"
+    }
+  },
+  "143:133": {
+    "inputs": {
+      "value": 1
+    },
+    "class_type": "PrimitiveFloat",
+    "_meta": {
+      "title": "CFG"
+    }
+  },
+  "143:137": {
+    "inputs": {
+      "pixels": [
+        "143:142",
+        0
+      ],
+      "vae": [
+        "143:120",
+        0
+      ]
+    },
+    "class_type": "VAEEncode",
+    "_meta": {
+      "title": "VAE Encode"
+    }
+  },
+  "143:141": {
+    "inputs": {
+      "samples": [
+        "143:128",
+        0
+      ],
+      "vae": [
+        "143:120",
+        0
+      ]
+    },
+    "class_type": "VAEDecode",
+    "_meta": {
+      "title": "VAE Decode"
+    }
+  },
+  "143:128": {
+    "inputs": {
+      "seed": 1009364311113844,
+      "steps": [
+        "143:136",
+        0
+      ],
+      "cfg": [
+        "143:134",
+        0
+      ],
+      "sampler_name": "euler",
+      "scheduler": "simple",
+      "denoise": 1,
+      "model": [
+        "143:135",
+        0
+      ],
+      "positive": [
+        "143:123",
+        0
+      ],
+      "negative": [
+        "143:122",
+        0
+      ],
+      "latent_image": [
+        "143:137",
+        0
+      ]
+    },
+    "class_type": "KSampler",
+    "_meta": {
+      "title": "KSampler"
+    }
+  },
+  "143:139": {
+    "inputs": {
+      "value": 40
+    },
+    "class_type": "PrimitiveInt",
+    "_meta": {
+      "title": "Steps"
+    }
+  },
+  "143:142": {
+    "inputs": {
+      "image": [
+        "41",
+        0
+      ]
+    },
+    "class_type": "FluxKontextImageScale",
+    "_meta": {
+      "title": "FluxKontextImageScale"
+    }
+  },
+  "143:121": {
+    "inputs": {
+      "unet_name": "Qwen-Image-Edit-2511-FP8_e4m3fn.safetensors",
+      "weight_dtype": "default"
+    },
+    "class_type": "UNETLoader",
+    "_meta": {
+      "title": "Load Diffusion Model"
+    }
+  },
+  "143:127": {
+    "inputs": {
+      "clip_name": "qwen_2.5_vl_7b_fp8_scaled.safetensors",
+      "type": "qwen_image",
+      "device": "default"
+    },
+    "class_type": "CLIPLoader",
+    "_meta": {
+      "title": "Load CLIP"
+    }
+  },
+  "143:138": {
+    "inputs": {
+      "value": true
+    },
+    "class_type": "PrimitiveBoolean",
+    "_meta": {
+      "title": "Enable 4steps LoRA?"
+    }
+  },
+  "143:135": {
+    "inputs": {
+      "switch": [
+        "143:138",
+        0
+      ],
+      "on_false": [
+        "143:129",
+        0
+      ],
+      "on_true": [
+        "143:130",
+        0
+      ]
+    },
+    "class_type": "ComfySwitchNode",
+    "_meta": {
+      "title": "Switch (Model)"
+    }
+  },
+  "143:134": {
+    "inputs": {
+      "switch": [
+        "143:138",
+        0
+      ],
+      "on_false": [
+        "143:132",
+        0
+      ],
+      "on_true": [
+        "143:133",
+        0
+      ]
+    },
+    "class_type": "ComfySwitchNode",
+    "_meta": {
+      "title": "Switch (CFG)"
+    }
+  },
+  "143:136": {
+    "inputs": {
+      "switch": [
+        "143:138",
+        0
+      ],
+      "on_false": [
+        "143:139",
+        0
+      ],
+      "on_true": [
+        "143:131",
+        0
+      ]
+    },
+    "class_type": "ComfySwitchNode",
+    "_meta": {
+      "title": "Switch (Steps)"
+    }
+  },
+  "143:130": {
+    "inputs": {
+      "lora_name": "qwen-image/Qwen-Image-Edit-2511-Lightning-4steps-V1.0-bf16.safetensors",
+      "strength_model": 1,
+      "model": [
+        "143:129",
+        0
+      ]
+    },
+    "class_type": "LoraLoaderModelOnly",
+    "_meta": {
+      "title": "LoraLoaderModelOnly"
+    }
+  },
+  "143:126": {
+    "inputs": {
+      "prompt": "Remove the hand.",
+      "clip": [
+        "143:127",
+        0
+      ],
+      "vae": [
+        "143:120",
+        0
+      ],
+      "image1": [
+        "143:142",
+        0
+      ]
+    },
+    "class_type": "TextEncodeQwenImageEditPlus",
+    "_meta": {
+      "title": "TextEncodeQwenImageEditPlus (Positive)"
+    }
+  },
+  "143:144": {
+    "inputs": {
+      "conditioning": [
+        "143:126",
+        0
+      ]
+    },
+    "class_type": "ConditioningZeroOut",
+    "_meta": {
+      "title": "ConditioningZeroOut"
+    }
+  }
+}

@@ -1,0 +1,156 @@
+{
+  "62": {
+    "inputs": {
+      "clip_name": "qwen3_4b_fp8_scaled.safetensors",
+      "type": "lumina2",
+      "device": "default"
+    },
+    "class_type": "CLIPLoader",
+    "_meta": {
+      "title": "Load CLIP"
+    }
+  },
+  "63": {
+    "inputs": {
+      "vae_name": "ae.safetensors"
+    },
+    "class_type": "VAELoader",
+    "_meta": {
+      "title": "Load VAE"
+    }
+  },
+  "65": {
+    "inputs": {
+      "samples": [
+        "69",
+        0
+      ],
+      "vae": [
+        "63",
+        0
+      ]
+    },
+    "class_type": "VAEDecode",
+    "_meta": {
+      "title": "VAE Decode"
+    }
+  },
+  "66": {
+    "inputs": {
+      "unet_name": "z_image_bf16.safetensors",
+      "weight_dtype": "default"
+    },
+    "class_type": "UNETLoader",
+    "_meta": {
+      "title": "Load Diffusion Model"
+    }
+  },
+  "67": {
+    "inputs": {
+      "text": "A high-fashion editorial magazine cover featuring three elegant Korean women posing closely together in a sophisticated yet dreamy aesthetic. The background has a muted pastel color with the word ‘allure’ in large, stylish typography, reinforcing the luxurious magazine style. The women wear intricately designed, semi-sheer long-sleeve dresses adorned with elegant floral and paisley patterns in soft pastel shades of blue, peach, and gold.\\n\\nThe woman on the left has long, wavy, pastel blue hair that cascades over her shoulders, paired with a light blue sheer dress with delicate embellishments. She gazes at the camera with a serene and poised expression, her left hand gently resting on her face. The woman in the center has voluminous blonde curls, framing her youthful and radiant face. She wears a patterned high-neck dress with intricate details, and her wide-eyed expression exudes charm and elegance. The woman on the right has soft, golden-brown hair styled in loose waves, complementing her peach-toned dress with intricate embroidery. She leans slightly toward the center, her hand resting on the blonde woman's shoulder, creating an intimate and cohesive composition.\\n\\nTheir poses are natural yet artistically arranged, emphasizing their closeness and connection, with their bodies subtly intertwined. The lighting is soft and diffused, enhancing their flawless skin and highlighting the textures of their garments. The overall composition exudes a luxurious, dreamy, and modern magazine aesthetic, perfect for a high-end fashion editorial",
+      "clip": [
+        "62",
+        0
+      ]
+    },
+    "class_type": "CLIPTextEncode",
+    "_meta": {
+      "title": "CLIP Text Encode (Positive Prompt)"
+    }
+  },
+  "68": {
+    "inputs": {
+      "width": 1024,
+      "height": 1024,
+      "batch_size": 1
+    },
+    "class_type": "EmptySD3LatentImage",
+    "_meta": {
+      "title": "EmptySD3LatentImage"
+    }
+  },
+  "69": {
+    "inputs": {
+      "seed": 539314584494177,
+      "steps": 30,
+      "cfg": 4,
+      "sampler_name": "res_multistep",
+      "scheduler": "simple",
+      "denoise": 1,
+      "model": [
+        "70",
+        0
+      ],
+      "positive": [
+        "67",
+        0
+      ],
+      "negative": [
+        "71",
+        0
+      ],
+      "latent_image": [
+        "68",
+        0
+      ]
+    },
+    "class_type": "KSampler",
+    "_meta": {
+      "title": "KSampler"
+    }
+  },
+  "70": {
+    "inputs": {
+      "shift": 3,
+      "model": [
+        "95",
+        0
+      ]
+    },
+    "class_type": "ModelSamplingAuraFlow",
+    "_meta": {
+      "title": "ModelSamplingAuraFlow"
+    }
+  },
+  "71": {
+    "inputs": {
+      "text": "",
+      "clip": [
+        "62",
+        0
+      ]
+    },
+    "class_type": "CLIPTextEncode",
+    "_meta": {
+      "title": "CLIP Text Encode (Negative Prompt)"
+    }
+  },
+  "95": {
+    "inputs": {
+      "sage_attention": "auto",
+      "model": [
+        "66",
+        0
+      ]
+    },
+    "class_type": "PathchSageAttentionKJ",
+    "_meta": {
+      "title": "Patch Sage Attention KJ"
+    }
+  },
+  "98": {
+    "inputs": {
+      "filename_prefix": "results",
+      "fake_input": 0,
+      "write_disk": true,
+      "images": [
+        "65",
+        0
+      ]
+    },
+    "class_type": "SaveImageJpg",
+    "_meta": {
+      "title": "Save Image Jpg"
+    }
+  }
+}

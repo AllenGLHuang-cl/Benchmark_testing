@@ -1,0 +1,454 @@
+{
+  "id": "163ec137-2b5c-4530-a8fb-acc942d50362",
+  "revision": 0,
+  "last_node_id": 15,
+  "last_link_id": 15,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "UNETLoader",
+      "pos": [
+        -230.25980788744175,
+        282.7590897338294
+      ],
+      "size": [
+        270,
+        107.328125
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "MODEL",
+          "type": "MODEL",
+          "links": [
+            1
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "UNETLoader"
+      },
+      "widgets_values": [
+        "krea2_turbo_fp8.safetensors",
+        "default"
+      ]
+    },
+    {
+      "id": 8,
+      "type": "ConditioningZeroOut",
+      "pos": [
+        73.15070651478543,
+        384.90824938723097
+      ],
+      "size": [
+        225,
+        47.328125
+      ],
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "conditioning",
+          "type": "CONDITIONING",
+          "link": 12
+        }
+      ],
+      "outputs": [
+        {
+          "name": "CONDITIONING",
+          "type": "CONDITIONING",
+          "links": [
+            8
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ConditioningZeroOut"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 4,
+      "type": "VAELoader",
+      "pos": [
+        69.59101552862388,
+        536.3067955105726
+      ],
+      "size": [
+        270,
+        79.328125
+      ],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "VAE",
+          "type": "VAE",
+          "links": [
+            3
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "VAELoader"
+      },
+      "widgets_values": [
+        "qwen_image_vae.safetensors"
+      ]
+    },
+    {
+      "id": 14,
+      "type": "Note",
+      "pos": [
+        -545.9098225343677,
+        283.1357979777654
+      ],
+      "size": [
+        301.34627731381056,
+        237.4808168503194
+      ],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "properties": {},
+      "widgets_values": [
+        "Text encoder is the 4b from here: https://huggingface.co/Comfy-Org/Qwen3-VL/tree/main/text_encoders\n\nhttps://huggingface.co/Comfy-Org/Qwen3-VL/blob/main/text_encoders/qwen3vl_4b_fp8_scaled.safetensors\n\n\nhttps://huggingface.co/Comfy-Org/Qwen-Image_ComfyUI/blob/main/split_files/vae/qwen_image_vae.safetensors"
+      ],
+      "color": "#432",
+      "bgcolor": "#653"
+    },
+    {
+      "id": 13,
+      "type": "CLIPLoader",
+      "pos": [
+        -239.70036637591437,
+        452.2730542698175
+      ],
+      "size": [
+        270,
+        106
+      ],
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "CLIP",
+          "type": "CLIP",
+          "links": [
+            14
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CLIPLoader"
+      },
+      "widgets_values": [
+        "qwen3vl_4b_fp8_scaled.safetensors",
+        "krea2",
+        "default"
+      ]
+    },
+    {
+      "id": 10,
+      "type": "EmptyLatentImage",
+      "pos": [
+        -244.20352766583179,
+        611.1969434544516
+      ],
+      "size": [
+        270,
+        143.328125
+      ],
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "LATENT",
+          "type": "LATENT",
+          "links": [
+            11
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "EmptyLatentImage"
+      },
+      "widgets_values": [
+        1024,
+        1024,
+        1
+      ]
+    },
+    {
+      "id": 3,
+      "type": "VAEDecode",
+      "pos": [
+        508.94429962924545,
+        298.17126658136203
+      ],
+      "size": [
+        225,
+        71.328125
+      ],
+      "flags": {},
+      "order": 8,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "samples",
+          "type": "LATENT",
+          "link": 2
+        },
+        {
+          "name": "vae",
+          "type": "VAE",
+          "link": 3
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            15
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "VAEDecode"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 2,
+      "type": "KSampler",
+      "pos": [
+        776.686830611528,
+        301.4068127347254
+      ],
+      "size": [
+        270,
+        339.3125
+      ],
+      "flags": {},
+      "order": 7,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 1
+        },
+        {
+          "name": "positive",
+          "type": "CONDITIONING",
+          "link": 5
+        },
+        {
+          "name": "negative",
+          "type": "CONDITIONING",
+          "link": 8
+        },
+        {
+          "name": "latent_image",
+          "type": "LATENT",
+          "link": 11
+        }
+      ],
+      "outputs": [
+        {
+          "name": "LATENT",
+          "type": "LATENT",
+          "links": [
+            2
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "KSampler"
+      },
+      "widgets_values": [
+        864887882566211,
+        "randomize",
+        8,
+        1,
+        "er_sde",
+        "simple",
+        1
+      ]
+    },
+    {
+      "id": 6,
+      "type": "CLIPTextEncode",
+      "pos": [
+        62.19365137970213,
+        281.4151802617166
+      ],
+      "size": [
+        400,
+        200
+      ],
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "clip",
+          "type": "CLIP",
+          "link": 14
+        }
+      ],
+      "outputs": [
+        {
+          "name": "CONDITIONING",
+          "type": "CONDITIONING",
+          "links": [
+            5,
+            12
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CLIPTextEncode"
+      },
+      "widgets_values": [
+        "A high-fashion editorial magazine cover featuring three elegant Korean women posing closely together in a sophisticated yet dreamy aesthetic. The background has a muted pastel color with the word ‘allure’ in large, stylish typography, reinforcing the luxurious magazine style. The women wear intricately designed, semi-sheer long-sleeve dresses adorned with elegant floral and paisley patterns in soft pastel shades of blue, peach, and gold.\\n\\nThe woman on the left has long, wavy, pastel blue hair that cascades over her shoulders, paired with a light blue sheer dress with delicate embellishments. She gazes at the camera with a serene and poised expression, her left hand gently resting on her face. The woman in the center has voluminous blonde curls, framing her youthful and radiant face. She wears a patterned high-neck dress with intricate details, and her wide-eyed expression exudes charm and elegance. The woman on the right has soft, golden-brown hair styled in loose waves, complementing her peach-toned dress with intricate embroidery. She leans slightly toward the center, her hand resting on the blonde woman's shoulder, creating an intimate and cohesive composition.\\n\\nTheir poses are natural yet artistically arranged, emphasizing their closeness and connection, with their bodies subtly intertwined. The lighting is soft and diffused, enhancing their flawless skin and highlighting the textures of their garments. The overall composition exudes a luxurious, dreamy, and modern magazine aesthetic, perfect for a high-end fashion editorial"
+      ]
+    },
+    {
+      "id": 15,
+      "type": "SaveImageJpg",
+      "pos": [
+        1087.0611170479692,
+        290.4929382174754
+      ],
+      "size": [
+        735.712196914707,
+        757.140029523177
+      ],
+      "flags": {},
+      "order": 9,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 15
+        }
+      ],
+      "outputs": [],
+      "properties": {
+        "Node name for S&R": "SaveImageJpg"
+      },
+      "widgets_values": [
+        "results",
+        0,
+        true
+      ]
+    }
+  ],
+  "links": [
+    [
+      1,
+      1,
+      0,
+      2,
+      0,
+      "MODEL"
+    ],
+    [
+      2,
+      2,
+      0,
+      3,
+      0,
+      "LATENT"
+    ],
+    [
+      3,
+      4,
+      0,
+      3,
+      1,
+      "VAE"
+    ],
+    [
+      5,
+      6,
+      0,
+      2,
+      1,
+      "CONDITIONING"
+    ],
+    [
+      8,
+      8,
+      0,
+      2,
+      2,
+      "CONDITIONING"
+    ],
+    [
+      11,
+      10,
+      0,
+      2,
+      3,
+      "LATENT"
+    ],
+    [
+      12,
+      6,
+      0,
+      8,
+      0,
+      "CONDITIONING"
+    ],
+    [
+      14,
+      13,
+      0,
+      6,
+      0,
+      "CLIP"
+    ],
+    [
+      15,
+      3,
+      0,
+      15,
+      0,
+      "IMAGE"
+    ]
+  ],
+  "groups": [],
+  "config": {},
+  "extra": {
+    "ds": {
+      "scale": 0.5909370924649647,
+      "offset": [
+        1017.9813744246871,
+        122.24885299123599
+      ]
+    },
+    "frontendVersion": "1.45.15",
+    "ue_links": [],
+    "VHS_latentpreview": false,
+    "VHS_latentpreviewrate": 0,
+    "VHS_MetadataImage": true,
+    "VHS_KeepIntermediate": true
+  },
+  "version": 0.4
+}
