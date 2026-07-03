@@ -53,8 +53,11 @@ def process_feature(feature_name, feature_path, config_path, output_name, server
         num_of_output = 1
         perf_log_path = output_folder / "performance.jsonl"
         steps = get_param_value_by_name(params, "steps")
-        if warmup_runs > 0:
+        if warmup_runs > 0 and image_files:
             print(f"Warming up ({warmup_runs}x) before measuring...")
+            # 暖身前先把 LoadImage 換成實際存在的 src 圖 — config 內建的檔名不在
+            # ComfyUI 的 input 資料夾，直接送出會被 /prompt 驗證擋下（HTTP 400）
+            params = update_params_by_class(params, "LoadImage", "image", str(image_files[0]))
             warmup(lambda: get_outputs(ws, params, client_id, server_address), n=warmup_runs)
 
     # 處理每個圖片
@@ -80,7 +83,7 @@ def process_feature(feature_name, feature_path, config_path, output_name, server
                 # 更新參數
                 params = update_params_by_class(params, "LoadImage", "image", str(image_file))
                 params = update_params_by_class(params, "TextEncodeBooguEdit", "prompt", prompt)
-                # params = update_params_by_class(params, "TextEncodeQwenImageEditPlus", "prompt", prompt)
+                params = update_params_by_class(params, "TextEncodeQwenImageEditPlus", "prompt", prompt)
                 params = update_params_by_class(params, "CLIPTextEncode", "text", prompt)
                 params = update_params_by_name(params, "noise_seed", actual_seed)
                 params = update_params_by_name(params, "seed", actual_seed)
@@ -146,14 +149,14 @@ if __name__ == "__main__":
     # 設定
     server_address = "127.0.0.1:7890"
     base_folder = Path("/data/allen/dataset/benchmark_testing/single_image_editing")
-    config_path = "./model_configs/flux2_kelin_4b_edit-api.json"
-    output_name = "flux2_klein_distill_4b"
+    config_path = "./model_configs/image_qwen_image_edit_2511_api.json"
+    output_name = "qwen_image_edit_2511_4steps"
     seed = 2025  # use_random_seed=False 時，第 i 張輸出用 seed+i
     use_random_seed = True  # True: 每張圖都 random 產生 seed 並記錄；False: 用固定 seed+i
     weight_type = "fp8"  # 這次跑的權重類型標籤，只有處理 performance_test 資料夾時會寫進 performance.jsonl
     warmup_runs = 2  # 只有處理 performance_test 資料夾時，正式量測前先暖身幾次（結果丟棄）
     num_of_output = 2
-    max_images_per_feature = 10
+    max_images_per_feature = 30
     
     # 初始化 WebSocket 連接
     client_id = str(uuid.uuid4())
@@ -168,22 +171,21 @@ if __name__ == "__main__":
     # 處理每個 feature
     for feature_folder in feature_folders:
         feature_name = feature_folder.name
-        if feature_name == "performance_test":
-            process_feature(
-                feature_name=feature_name,
-                feature_path=feature_folder,
-                config_path=config_path,
-                output_name=output_name,
-                server_address=server_address,
-                client_id=client_id,
-                ws=ws,
-                seed=seed,
-                num_of_output=num_of_output,
-                max_images_per_feature=max_images_per_feature,
-                use_random_seed=use_random_seed,
-                weight_type=weight_type,
-                warmup_runs=warmup_runs,
-            )
+        process_feature(
+            feature_name=feature_name,
+            feature_path=feature_folder,
+            config_path=config_path,
+            output_name=output_name,
+            server_address=server_address,
+            client_id=client_id,
+            ws=ws,
+            seed=seed,
+            num_of_output=num_of_output,
+            max_images_per_feature=max_images_per_feature,
+            use_random_seed=use_random_seed,
+            weight_type=weight_type,
+            warmup_runs=warmup_runs,
+        )
     
     ws.close()
     print("\nAll features processed!")

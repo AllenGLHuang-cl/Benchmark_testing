@@ -233,12 +233,14 @@ def load_thumb(path: Path, thumb_px: int):
 
 # ---------------------------------------------------------------- layout
 
-def best_grid(n_cells, region_w, region_h):
-    """cols, rows maximizing the square image side that fits every cell."""
+def best_grid(n_cells, region_w, region_h, reserved_cols=0):
+    """cols, rows maximizing the square image side that fits every cell.
+    reserved_cols: extra same-width columns set aside (e.g. a dedicated Source
+    column on the left) — they consume width but hold none of the n_cells."""
     best = (1, n_cells, 0.0)
     for cols in range(1, n_cells + 1):
         rows = math.ceil(n_cells / cols)
-        cw = region_w / cols
+        cw = region_w / (cols + reserved_cols)
         ch = region_h / rows
         side = min(cw - 2 * CELL_PAD, ch - LABEL_H - 2 * CELL_PAD)
         if side > best[2]:
@@ -294,13 +296,22 @@ def place_cell(slide, x, y, cw, ch, label, thumb):
              align=PP_ALIGN.CENTER, anchor=MSO_ANCHOR.MIDDLE)
 
 
-def render_group_slide(prs, cols, cw, ch, region_y, region_w, title, prompt_text, cell_specs, thumb_px):
+def render_group_slide(prs, cols, cw, ch, region_y, region_w, title, prompt_text, cell_specs, thumb_px,
+                       source_left=False):
     """One slide: title + prompt + grid of cell_specs=[(label, path_or_None), ...].
-    Shared by both dataset layouts. Returns the labels whose image was missing/unreadable."""
+    Shared by both dataset layouts. Returns the labels whose image was missing/unreadable.
+    source_left: cell_specs[0] (the Source) gets its own left column, vertically
+    centered; the remaining cells grid into the columns to its right."""
     slide = blank_slide(prs)
     add_text(slide, MARGIN, MARGIN, region_w, TITLE_H, title, 18, bold=True)
     shown = prompt_text if len(prompt_text) <= 220 else prompt_text[:217] + "…"
-    add_text(slide, MARGIN, MARGIN + TITLE_H, region_w, PROMPT_H, shown, 12, italic=True, color=GREY_TEXT)
+    box = add_text(slide, MARGIN, MARGIN + TITLE_H, region_w, PROMPT_H,
+                   "Prompt: ", 12, bold=True)
+    run = box.text_frame.paragraphs[0].add_run()
+    run.text = f"“{shown}”"
+    run.font.size = Pt(12)
+    run.font.italic = True
+    run.font.color.rgb = GREY_TEXT
 
     notes = [f"prompt: {prompt_text}"]
     missing_labels = []
@@ -311,8 +322,15 @@ def render_group_slide(prs, cols, cw, ch, region_y, region_w, title, prompt_text
             notes.append(f"{label}: MISSING")
         else:
             notes.append(f"{label}: {path}")
-        r, c = divmod(i, cols)
-        place_cell(slide, MARGIN + c * cw, region_y + r * ch, cw, ch, label, thumb)
+        if source_left and i == 0:
+            region_h = SLIDE_H - region_y - MARGIN
+            place_cell(slide, MARGIN, region_y + (region_h - ch) / 2, cw, ch, label, thumb)
+        elif source_left:
+            r, c = divmod(i - 1, cols)
+            place_cell(slide, MARGIN + (c + 1) * cw, region_y + r * ch, cw, ch, label, thumb)
+        else:
+            r, c = divmod(i, cols)
+            place_cell(slide, MARGIN + c * cw, region_y + r * ch, cw, ch, label, thumb)
     slide.notes_slide.notes_text_frame.text = "\n".join(notes)
     return missing_labels
 
@@ -358,9 +376,9 @@ def aggregate_perf_jsonl(path: Path):
         if agg == "mode":
             row[col] = Counter(vals).most_common(1)[0][0]
         elif agg == "avg":
-            row[col] = round(sum(vals) / len(vals), 3)
+            row[col] = round(sum(vals) / len(vals), 1)
         elif agg == "peak":
-            row[col] = max(vals)
+            row[col] = round(max(vals), 1)
     w, h = values("output_width"), values("output_height")
     if w and h:
         row["output_size"] = f"{Counter(w).most_common(1)[0][0]}x{Counter(h).most_common(1)[0][0]}"
@@ -505,8 +523,8 @@ def build(cfg_path: Path):
                 if not (fdir / "results" / m["dir"]).is_dir():
                     print(f"WARN [{feat}] no results dir for model '{m['dir']}' — whole column missing")
 
-        cols, rows = best_grid(1 + len(models), region_w, region_h)
-        cw, ch = region_w / cols, region_h / rows
+        cols, rows = best_grid(len(models), region_w, region_h, reserved_cols=1)
+        cw, ch = region_w / (cols + 1), region_h / rows
 
         for feat in kept:
             fdir = root / feat
@@ -528,7 +546,8 @@ def build(cfg_path: Path):
                     cell_specs.append((m["label"], resolve_output(fdir / "results" / m["dir"], stem, p_idx, seed_prefer)))
                 title = f"{feat} / {stem}  [p{p_idx}]"
                 for label in render_group_slide(prs, cols, cw, ch, region_y, region_w,
-                                                 title, p_text, cell_specs, thumb_px):
+                                                 title, p_text, cell_specs, thumb_px,
+                                                 source_left=True):
                     if label != "Source":
                         missing[label] += 1
 

@@ -20,8 +20,10 @@ before adding video comparisons.
 ## Two dataset layouts
 - **`"features"` (default, i2i/editing)** — `dataset_root` has one dir per feature, each
   with `src/`, `meta_data/`, `results/<model_dir>/`. Groups by (source image, prompt
-  index); shows Source + models. Missing model outputs render as a grey "missing" slide
-  cell rather than dropping the group.
+  index); shows Source + models — the Source sits in its own left column, vertically
+  centered, with the model outputs in an aligned grid to its right (user preference,
+  2026-07-02). Missing model outputs render as a grey "missing" slide cell rather than
+  dropping the group.
 - **`"flat"` (t2i, no source image)** — `models[].dir` is a flat directory; a `key_regex`
   extracts the comparison key from each filename (e.g. `tti_{idx}_seed{seed}.jpg`). Only
   keys present in every model are rendered (intersect, don't guess).
